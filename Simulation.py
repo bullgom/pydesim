@@ -1,7 +1,7 @@
-from desim import Diagraph, INF, NEG_INF, PortManager
+from desim import Digraph, INF, NEG_INF, PortManager
 
 
-class Simulation(Diagraph):
+class Simulation(Digraph):
 
     def __init__(
             self,
