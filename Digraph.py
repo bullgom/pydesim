@@ -1,4 +1,4 @@
-from desim import Model, PortManager, Message, INF, NEG_INF
+from desim import Model, PortManager, Message, Content, INF, NEG_INF, Atomic
 
 
 class Digraph(Model):
@@ -7,13 +7,11 @@ class Digraph(Model):
             self,
             name,
             parent=None,
-            in_ports=PortManager(),
-            out_ports=PortManager(),
             cell_pos=None,
+            in_ports={},
+            out_ports={},
             next_event_time=INF,
             last_event_time=NEG_INF,
-            children=[],
-            next_event_models=[],
             int_couplings={},
             ext_output_couplings={},
             ext_input_couplings={},
@@ -22,14 +20,14 @@ class Digraph(Model):
         super().__init__(
             name,
             parent,
+            cell_pos,
             in_ports,
             out_ports,
-            cell_pos,
-            next_event_time=INF,
-            last_event_time=NEG_INF)
+            next_event_time,
+            last_event_time)
 
-        self.children = children
-        self.next_event_models = next_event_models
+        self.next_event_models = []
+        self.children = []
         self.int_couplings = int_couplings
         self.ext_output_couplings = ext_output_couplings
         self.ext_input_couplings = ext_input_couplings
@@ -46,50 +44,97 @@ class Digraph(Model):
             coupling = self.int_couplings
         else:
             raise ValueError("Wrong coupling")
-
-        if source_port in coupling:
+        
+        try:
             if target_port not in coupling[source_port]:
                 coupling[source_port].append(target_port)
-        else:
+        except KeyError:
             coupling[source_port] = [target_port]
-
 
     def int_transition(self, time):
         result = []
         for child in self.next_event_models:
-            temp = child.int_transition(time)
-            if temp: result += temp
+            output = child.int_transition(time)
+            if output: result += output
+            else: break
 
         toParent = []
+        parent_append = toParent.append
+        int_couplings = self.int_couplings
+        ext_output_couplings = self.ext_output_couplings
+
         for message in result:
-            for target_port in self.int_couplings[message.content.port]:
-                target_port.model.ext_transition(
-                    message.translate(target_port))
-            for target_port in self.ext_output_couplings[message.content.port]:
-                toParent.append(message.translate(target_port))
+            src = message.source
+            value = message.content.value
+            if message.content.port in int_couplings:
+                for target_port in int_couplings[message.content.port]:
+                    target_port.model.ext_transition(
+                        Message(src, time, Content(target_port, value)))
+            if message.content.port in ext_output_couplings:
+                for target_port in ext_output_couplings[message.content.port]:
+                    parent_append(Message(src, time, Content(target_port, value)))
 
         self.time_advance()
         return toParent
 
     def ext_transition(self, message):
+        
+        src = message.source
+        time = message.time
+        value = message.content.value
         for target_port in self.ext_input_couplings[message.content.port]:
-            target_port.model.ext_transition(message.translate(target_port))
+            target_port.model.ext_transition(
+                Message(src, time, Content(target_port, value)))
         self.time_advance()
+
 
     def time_advance(self):
         minimum = INF
         self.next_event_models.clear()
+        append = self.next_event_models.append
         for model in self.children:
             if model.next_event_time < minimum:
                 minimum = model.next_event_time
                 self.next_event_models.clear()
-                self.next_event_models.append(model)
+                append(model)
             elif model.next_event_time == minimum:
-                self.next_event_models.append(model)
+                append(model)
         self.last_event_time = self.next_event_time
         self.next_event_time = minimum
+
 
     def initialize(self):
         for child in self.children:
             child.initialize()
         self.time_advance()
+
+    def __getitem__(self, idx):
+        return self.children[idx]
+
+    def __iter__(self):
+        self._iter_count = 0
+        return self
+
+    def __next__(self):
+        x = self._iter_count
+        self._iter_count += 1
+        if x < len(self.children):
+            return self.children[x]
+        else:
+            raise StopIteration
+
+    def find(self, name):
+        """
+        iteratively looks for entity with given name
+        from all children tree
+        """
+
+        for child in self.children:
+            if child.name == name:
+                return child
+            elif issubclass(type(child), Digraph):
+                temp = child.find(name)
+                if temp:
+                    return temp
+        return None
+

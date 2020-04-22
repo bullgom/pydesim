@@ -1,5 +1,5 @@
 from desim import Digraph, INF, NEG_INF, PortManager
-
+import time
 
 class Simulation(Digraph):
 
@@ -8,32 +8,28 @@ class Simulation(Digraph):
             name,
             time_limit,
             parent=None,
-            in_ports=PortManager(),
-            out_ports=PortManager(),
+            in_ports=[],
+            out_ports=[],
             cell_pos=None,
             next_event_time=INF,
             last_event_time=NEG_INF,
-            children=[],
-            next_event_models=[],
             int_couplings={},
             ext_output_couplings={},
             ext_input_couplings={},
             select=None):
 
-        super(Simulation, self).__init__(
+        super().__init__(
             name,
-            parent=None,
-            in_ports=PortManager(),
-            out_ports=PortManager(),
-            cell_pos=None,
-            next_event_time=INF,
-            last_event_time=NEG_INF,
-            children=[],
-            next_event_models=[],
-            int_couplings={},
-            ext_output_couplings={},
-            ext_input_couplings={},
-            select=None)
+            parent,
+            cell_pos,
+            in_ports,
+            out_ports,
+            next_event_time,
+            last_event_time,
+            int_couplings,
+            ext_output_couplings,
+            ext_input_couplings,
+            select)
 
         self.time_limit = time_limit
 
@@ -41,6 +37,8 @@ class Simulation(Digraph):
         print("Initializing simulation")
         self.initialize()
         print("Starting simulation")
+        start_time = time.time()
         while self.next_event_time <= self.time_limit and self.next_event_time != INF:
             self.int_transition(self.next_event_time)
             self.time_advance()
+        print("Simulation finished\nRunning Time: "+str( time.time()-start_time))

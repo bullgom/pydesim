@@ -1,4 +1,5 @@
 from desim import Model, Content, Port
+import json
 
 class Message:
 

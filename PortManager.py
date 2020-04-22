@@ -1,7 +1,7 @@
 from desim import Port
 
 
-class PortManager(list):
+class PortManager(dict):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -9,14 +9,10 @@ class PortManager(list):
     def __contains__(self, key):
         return any(port is key for port in self)
 
-    def __getitem__(self, key):
-        for port in self:
-            if key is port.name:
-                return port
-        return ValueError("No such port with name: " + key)
-
     def __add__(self, other):
         if isinstance(other, PortManager):
-            self += other.ports
-        elif isinstance(other, list):
-            self += other
+            for key, value in other.items():
+                self[key] = value
+        elif isinstance(other, dict):
+            for key, value in other.items():
+                self[key] = value
