@@ -36,3 +36,6 @@ class Model:
 
     def time_advance(self):
         raise NotImplementedError()
+
+    def __eq__(self, other):
+        return self.name == other.name

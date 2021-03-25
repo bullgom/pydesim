@@ -1,6 +1,6 @@
 from desim import INF, NEG_INF, PASSIVE, Message, Model, PortManager
 from functools import wraps
-
+from typing import Optional
 import math
 import numpy as np
 
@@ -9,18 +9,18 @@ class Atomic(Model):
 
     def __init__(
             self,
-            name,
-            parent=None,
+            name: str,
+            parent: Optional[Model]=None,
             cell_pos=None,
-            in_ports=[],
-            out_ports=[],
-            next_event_time=INF,
-            last_event_time=NEG_INF,
-            elapsed_time=INF,
+            in_ports:Optional[dict]={},
+            out_ports:Optional[dict]={},
+            next_event_time:Optional[float]=INF,
+            last_event_time:Optional[float]=NEG_INF,
+            elapsed_time:Optional[float]=INF,
             state=PASSIVE,
-            sigma=INF,
-            ext_transition_callbacks=[],
-            int_transition_callbacks=[]):
+            sigma:Optional[float]=INF,
+            ext_transition_callbacks:Optional[list]=[],
+            int_transition_callbacks:Optional[list]=[]):
         super().__init__(
             name,
             parent,
@@ -52,7 +52,7 @@ class Atomic(Model):
         self.last_event_time = self.initial_state["last_event_time"]
         self.elapsed_time = self.initial_state["elapsed_time"]
 
-    def hold_in(self, state, sigma=INF):
+    def hold_in(self, state:str, sigma:Optional[float] = INF):
         self.state = state
         self.sigma = sigma
 
@@ -60,7 +60,7 @@ class Atomic(Model):
         if math.isfinite(self.sigma):
             self.sigma -= self.elapsed_time
 
-    def time_advance(self, time):
+    def time_advance(self, time:float):
         self.last_event_time = time
         self.next_event_time = time + self.sigma
 
@@ -68,6 +68,7 @@ class Atomic(Model):
     def int_transition_wrapper(int_transition):
         @wraps(int_transition)
         def wrapper(self, *args, **kwargs):
+            self.elapsed_time = args[0]-self.last_event_time
             result = int_transition(self, *args, **kwargs)
             self.time_advance(args[0])
             for callback in self.int_transition_callbacks:

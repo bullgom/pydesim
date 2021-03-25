@@ -1,4 +1,4 @@
-from desim import Model, PortManager, Message, Content, INF, NEG_INF, Atomic
+from desim import Model, PortManager, Message, Content, INF, NEG_INF, Atomic, Port
 
 
 class Digraph(Model):
@@ -34,6 +34,8 @@ class Digraph(Model):
         self.select = select
 
     def couple(self, source_port, target_port):
+        assert type(source_port) is Port and type(target_port) is Port
+
         coupling = None
 
         if source_port.model is self and target_port.model in self.children:
@@ -137,4 +139,3 @@ class Digraph(Model):
                 if temp:
                     return temp
         return None
-

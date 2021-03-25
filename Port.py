@@ -9,4 +9,4 @@ class Port:
         else: raise NotImplementedError()
 
     def __hash__(self):
-        return hash((self.model, self.name))
+        return hash((self.model.name, self.name))
