@@ -31,7 +31,7 @@ class Model:
     def int_transition(self, time):
         raise NotImplementedError()
 
-    def ext_transition(self, message):
+    def ext_transition(self, content, time):
         raise NotImplementedError()
 
     def time_advance(self):
