@@ -1,4 +1,4 @@
-from desim import INF, NEG_INF, PASSIVE, Message, Model, PortManager
+from pydesim import INF, NEG_INF, PASSIVE, Message, Model, PortManager
 from functools import wraps
 from typing import Optional
 import math

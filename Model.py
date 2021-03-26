@@ -1,4 +1,4 @@
-from desim import PortManager, INF, NEG_INF
+from pydesim import PortManager, INF, NEG_INF
 
 
 class Model:

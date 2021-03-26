@@ -1,4 +1,4 @@
-from desim import Model, Content, Port
+from pydesim import Model, Content, Port
 import json
 
 class Message:

@@ -1,4 +1,4 @@
-from desim import Model, PortManager, Message, Content, INF, NEG_INF, Atomic, Port
+from pydesim import Model, PortManager, Message, Content, INF, NEG_INF, Atomic, Port
 
 
 class Digraph(Model):

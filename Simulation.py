@@ -1,4 +1,4 @@
-from desim import Digraph, INF, NEG_INF, PortManager
+from pydesim import Digraph, INF, NEG_INF, PortManager
 import time
 
 class Simulation(Digraph):
