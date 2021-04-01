@@ -1,4 +1,4 @@
-from pydesim import Port
+from . import Port
 
 
 class PortManager(dict):

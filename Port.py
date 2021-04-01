@@ -1,5 +1,5 @@
 
-from pydesim.Model import Model
+from .Model import Model
 
 
 class Port:

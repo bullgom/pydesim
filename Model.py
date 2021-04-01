@@ -1,5 +1,6 @@
-from pydesim import PortManager, INF, NEG_INF, Content
-
+from . import INF, NEG_INF, Content
+from .PortManager import PortManager
+from .Content import Content
 
 class Model:
 
