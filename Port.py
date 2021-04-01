@@ -1,6 +1,9 @@
 
+from pydesim.Model import Model
+
+
 class Port:
-    def __init__(self, model, name):
+    def __init__(self, model:Model, name:str):
         self.model = model
         self.name = name
 

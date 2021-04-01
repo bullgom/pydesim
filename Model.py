@@ -1,4 +1,4 @@
-from pydesim import PortManager, INF, NEG_INF
+from pydesim import PortManager, INF, NEG_INF, Content
 
 
 class Model:
@@ -28,10 +28,10 @@ class Model:
     def initialize(self):
         raise NotImplementedError()
 
-    def int_transition(self, time):
+    def int_transition(self, time:float):
         raise NotImplementedError()
 
-    def ext_transition(self, content, time):
+    def ext_transition(self, content:Content, time:float):
         raise NotImplementedError()
 
     def time_advance(self):

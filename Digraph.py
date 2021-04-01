@@ -33,7 +33,7 @@ class Digraph(Model):
         self.ext_input_couplings = ext_input_couplings
         self.select = select
 
-    def couple(self, source_port, target_port):
+    def couple(self, source_port:Port, target_port:Port):
         assert type(source_port) is Port and type(target_port) is Port
 
         coupling = None
@@ -53,7 +53,7 @@ class Digraph(Model):
         except KeyError:
             coupling[source_port] = [target_port]
 
-    def int_transition(self, time):
+    def int_transition(self, time:float):
         result = []
         for child in self.next_event_models:
             output = child.int_transition(time)
@@ -79,7 +79,7 @@ class Digraph(Model):
         self.time_advance()
         return toParent
 
-    def ext_transition(self, message):
+    def ext_transition(self, message:Message):
         
         src = message.source
         time = message.time
@@ -125,7 +125,7 @@ class Digraph(Model):
         else:
             raise StopIteration
 
-    def find(self, name):
+    def find(self, name:str):
         """
         iteratively looks for entity with given name
         from all children tree
