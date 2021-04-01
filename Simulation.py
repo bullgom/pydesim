@@ -6,7 +6,7 @@ class Simulation(Digraph):
     def __init__(
             self,
             name,
-            time_limit,
+            time_limit=INF,
             parent=None,
             in_ports=[],
             out_ports=[],
