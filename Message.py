@@ -9,7 +9,7 @@ class Message:
         self.time = time
         self.content = content
 
-    def translate(self, new_port: Port):
+    def translate(self, new_port: Port) -> "Message":
         return Message(
             self.source,
             self.time,
