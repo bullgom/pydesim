@@ -1,5 +1,6 @@
 from . import INF, NEG_INF, Content
 from .content import Content
+from typing import Any
 
 class Model:
 
@@ -26,10 +27,10 @@ class Model:
     def initialize(self):
         raise NotImplementedError()
 
-    def int_transition(self, time:float):
+    def int_transition(self, time:float) -> Any:
         raise NotImplementedError()
 
-    def ext_transition(self, content:Content, time:float):
+    def ext_transition(self, content:Content, time:float) -> None:
         raise NotImplementedError()
 
     def time_advance(self):
