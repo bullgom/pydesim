@@ -1,5 +1,4 @@
-from pydesim import Model, Content, Port
-import json
+from . import Content
 
 class Message:
 

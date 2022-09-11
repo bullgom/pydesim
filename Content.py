@@ -1,4 +1,4 @@
-from pydesim import Port
+from . import Port
 
 class Content:
     def __init__(self, port, value):
