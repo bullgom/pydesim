@@ -1,4 +1,4 @@
-from . import Model, Message, Content, INF, NEG_INF, Atomic, Port
+from . import Model, Message, Content, INF, NEG_INF, Port
 from typing import Optional
 
 class Digraph(Model):
@@ -14,11 +14,14 @@ class Digraph(Model):
         ):
         super().__init__(*args, **kwargs)
 
-        self.next_event_models = []
+        self.next_event_models : list[Model] = []
         self.children : list[Model] = []
-        self.int_couplings = int_couplings if int_couplings else {}
-        self.ext_output_couplings = ext_output_couplings if ext_output_couplings else {}
-        self.ext_input_couplings = ext_input_couplings if ext_input_couplings else {}
+        self.int_couplings : dict[Port, list[Port]] =  \
+            int_couplings if int_couplings else {}
+        self.ext_output_couplings : dict[Port, list[Port]] = \
+            ext_output_couplings if ext_output_couplings else {}
+        self.ext_input_couplings : dict[Port, list[Port]] = \
+            ext_input_couplings if ext_input_couplings else {}
         
         if ta_function == "unnested":
             self._time_advance = self._time_advance_unnested
@@ -54,38 +57,33 @@ class Digraph(Model):
             output = child.int_transition(time)
             if output:
                 result += output
-            else:
-                break
 
         to_parent = []
-        parent_append = to_parent.append
-        int_couplings = self.int_couplings
-        ext_output_couplings = self.ext_output_couplings
-
         for message in result:
-            src = message.source
-            value = message.content.value
-            if message.content.port in int_couplings:
-                for target_port in int_couplings[message.content.port]:
-                    target_port.model.ext_transition(
-                        Message(src, time, Content(target_port, value)))
-            if message.content.port in ext_output_couplings:
-                for target_port in ext_output_couplings[message.content.port]:
-                    parent_append(
-                        Message(src, time, Content(target_port, value)))
+            if message.content.port in self.int_couplings:
+                self.on_int(message)
+                    
+            if message.content.port in self.ext_output_couplings:
+                to_parent += self.on_ext_output(message)
 
         self.time_advance()
         return to_parent
 
-    def ext_transition(self, message: Message):
+    def on_int(self, message: Message) -> None:
+        for target_port in self.int_couplings[message.content.port]:
+            target_port.model.ext_transition(message.translate(target_port))
+        return None
 
-        src = message.source
-        time = message.time
-        value = message.content.value
+    def on_ext_output(self, message: Message) -> list[Message]:
+        to_parent = []
+        for target_port in self.ext_output_couplings[message.content.port]:
+            to_parent.append(message.translate(target_port))
+        return to_parent
+
+    def ext_transition(self, message: Message):
         target_ports = self.ext_input_couplings[message.content.port]
         for target_port in target_ports:
-            target_port.model.ext_transition(
-                Message(src, time, Content(target_port, value)))
+            target_port.model.ext_transition(message.translate(target_port))
         self.time_advance()
 
     def time_advance(self):
