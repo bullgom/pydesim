@@ -81,18 +81,10 @@ class Digraph(Model):
     def time_advance(self):
         self.last_event_time = self.next_event_time
 
-        minimum = INF
-        self.next_event_models.clear()
-        append = self.next_event_models.append
-        for model in self.children:
-            if model.next_event_time < minimum:
-                minimum = model.next_event_time
-                self.next_event_models.clear()
-                append(model)
-            elif model.next_event_time == minimum:
-                append(model)
+        min_time = min(self.children, key=lambda x: x.next_event_time)
+        self.next_event_models = [m for m in self.children if m.next_event_time == min_time]
 
-        self.next_event_time = minimum
+        self.next_event_time = min_time
 
     def initialize(self):
         for child in self.children:
