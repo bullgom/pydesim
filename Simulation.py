@@ -1,33 +1,15 @@
 from . import Digraph, INF, NEG_INF
-import time
 
 class Simulation(Digraph):
 
     def __init__(
             self,
-            name,
+            *args,
             time_limit=INF,
-            parent=None,
-            in_ports=[],
-            out_ports=[],
-            next_event_time=INF,
-            last_event_time=NEG_INF,
-            int_couplings={},
-            ext_output_couplings={},
-            ext_input_couplings={},
-            select=None):
+            **kwargs
+        ):
 
-        super().__init__(
-            name,
-            parent,
-            in_ports,
-            out_ports,
-            next_event_time,
-            last_event_time,
-            int_couplings,
-            ext_output_couplings,
-            ext_input_couplings,
-            select)
+        super().__init__(*args, **kwargs)
 
         self.time_limit = time_limit
 
