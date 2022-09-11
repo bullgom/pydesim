@@ -3,7 +3,6 @@
 from .constants import *
 
 from .port import Port
-from .port_manager import PortManager
 from .model import Model
 from .content import Content
 from .message import Message

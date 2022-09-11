@@ -1,5 +1,4 @@
 from . import INF, NEG_INF, Content
-from .port_manager import PortManager
 from .content import Content
 
 class Model:
@@ -8,15 +7,15 @@ class Model:
             self,
             name,
             parent=None,
-            in_ports={},
-            out_ports={},
+            in_ports : dict | None = None,
+            out_ports : dict | None = None,
             next_event_time=INF,
             last_event_time=NEG_INF):
 
         self.name = name
         self.parent = parent
-        self.in_ports = PortManager(in_ports)
-        self.out_ports = PortManager(out_ports)
+        self.in_ports = in_ports if in_ports else {}
+        self.out_ports = out_ports if out_ports else {}
         self.next_event_time = next_event_time
         self.last_event_time = last_event_time
 
