@@ -1,4 +1,4 @@
-from . import Model, PortManager, Message, Content, INF, NEG_INF, Atomic, Port
+from . import Model, Message, Content, INF, NEG_INF, Atomic, Port
 from typing import Optional
 
 class Digraph(Model):
@@ -8,7 +8,7 @@ class Digraph(Model):
             name,
             parent : Model | None =None,
             in_ports : dict | None = None,
-            out_ports={},
+            out_ports : dict | None = None,
             next_event_time=INF,
             last_event_time=NEG_INF,
             int_couplings={},

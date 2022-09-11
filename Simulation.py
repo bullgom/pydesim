@@ -1,4 +1,4 @@
-from . import Digraph, INF, NEG_INF, PortManager
+from . import Digraph, INF, NEG_INF
 import time
 
 class Simulation(Digraph):
