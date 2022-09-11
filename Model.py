@@ -35,5 +35,15 @@ class Model:
     def time_advance(self):
         raise NotImplementedError()
 
+    def find(self, name: str) -> "Model" | None:
+        """
+        iteratively searchs entity with given name
+        from the children tree
+        """
+        raise NotImplemented
+
     def __eq__(self, other):
         return self.name == other.name
+
+    def __repr__(self) -> str:
+        return f"Model({self.name})"

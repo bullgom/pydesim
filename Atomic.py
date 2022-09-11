@@ -1,6 +1,6 @@
 from . import INF, NEG_INF, PASSIVE, Message, Model
 from functools import wraps
-from typing import Optional
+from typing import Optional, Callable
 import math
 
 
@@ -8,56 +8,37 @@ class Atomic(Model):
 
     def __init__(
             self,
-            name: str,
-            parent: Optional[Model]=None,
-            in_ports:Optional[dict]={},
-            out_ports:Optional[dict]={},
-            next_event_time:Optional[float]=INF,
-            last_event_time:Optional[float]=NEG_INF,
-            elapsed_time:Optional[float]=INF,
-            state=PASSIVE,
-            sigma:Optional[float]=INF,
-            ext_transition_callbacks:Optional[list]=[],
-            int_transition_callbacks:Optional[list]=[]):
-        super().__init__(
-            name,
-            parent,
-            in_ports,
-            out_ports,
-            next_event_time,
-            last_event_time)
+            *args,
+            ext_transition_callbacks: list[Callable] | None = None,
+            int_transition_callbacks: list[Callable] | None = None,
+            **kwargs
+        ):
+        super().__init__(*args, **kwargs)
 
-        self.elapsed_time = elapsed_time
-        self.state = state
-        self.sigma = sigma
-        self.int_transition_callbacks = int_transition_callbacks
-        self.ext_transition_callbacks = ext_transition_callbacks
-        self.initial_state = {
-            "state": self.state,
-            "sigma": self.sigma,
-            "next_event_time": self.next_event_time,
-            "last_event_time": self.last_event_time,
-            "elapsed_time": self.elapsed_time
-        }
-
-    def initialize(self):
-        self.state = self.initial_state["state"]
-        self.sigma = self.initial_state["sigma"]
-        self.next_event_time = self.initial_state["next_event_time"]
-        self.last_event_time = self.initial_state["last_event_time"]
-        self.elapsed_time = self.initial_state["elapsed_time"]
+        self.elapsed_time = INF
+        self.state = PASSIVE
+        self.time_until_event = INF
+        self.int_transition_callbacks = int_transition_callbacks \
+            if int_transition_callbacks else []
+        self.ext_transition_callbacks = ext_transition_callbacks \
+            if ext_transition_callbacks else []
 
     def hold_in(self, state:str, sigma:Optional[float] = INF):
         self.state = state
-        self.sigma = sigma
+        self.time_until_event = sigma
 
     def resume(self):
-        if math.isfinite(self.sigma):
-            self.sigma -= self.elapsed_time
+        if math.isfinite(self.time_until_event):
+            self.time_until_event -= self.elapsed_time
 
     def time_advance(self, time:float):
         self.last_event_time = time
-        self.next_event_time = time + self.sigma
+        self.next_event_time = time + self.time_until_event
+
+    def find(self, name: str) -> "Model" | None:
+        return self if name == self.name else None
+        
+        
 
     @staticmethod
     def int_transition_wrapper(int_transition):

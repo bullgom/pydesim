@@ -106,17 +106,13 @@ class Digraph(Model):
         else:
             raise StopIteration
 
-    def find(self, name: str):
-        """
-        iteratively looks for entity with given name
-        from all children tree
-        """
-
+    def find(self, name: str) -> Model | None:
+        if self.name == name:
+            return self
+        
         for child in self.children:
-            if child.name == name:
-                return child
-            elif issubclass(type(child), Digraph):
-                temp = child.find(name)
-                if temp:
-                    return temp
+            res = child.find(child)
+            if res:
+                return res
+                
         return None
