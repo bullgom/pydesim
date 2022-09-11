@@ -18,9 +18,9 @@ def c(value: dict[int, int]) -> list[int]:
             mins = [k]
         
         elif v == minval:
-            mins.append(v)
+            mins.append(k)
 
-    return mins
+    return mins    
 
 def generate(n: int, low: int, high: int) -> dict[int, int]:
     value = {}
@@ -31,8 +31,8 @@ def generate(n: int, low: int, high: int) -> dict[int, int]:
     
     return value
 
-repeats = 100000
-n = 10000
+repeats = 1000000
+n = 10
 low = 0
 high = 1000
 
