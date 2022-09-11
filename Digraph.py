@@ -9,17 +9,26 @@ class Digraph(Model):
             int_couplings : dict | None = None,
             ext_output_couplings : dict | None = None,
             ext_input_couplings : dict | None = None,
+            ta_function: str = "unnested",
             **kwargs
         ):
         super().__init__(*args, **kwargs)
 
         self.next_event_models = []
-        self.children = []
+        self.children : list[Model] = []
         self.int_couplings = int_couplings if int_couplings else {}
         self.ext_output_couplings = ext_output_couplings if ext_output_couplings else {}
         self.ext_input_couplings = ext_input_couplings if ext_input_couplings else {}
+        
+        if ta_function == "unnested":
+            self._time_advance = self._time_advance_unnested
+        elif ta_function == "nested":
+            self._time_advance = self._time_advance_nested
+        else:
+            raise ValueError(f"{ta_function} is not allowed")
 
     def couple(self, source_port: Port, target_port: Port):
+        """Couples two ports with direction"""
         assert type(source_port) is Port and type(target_port) is Port
 
         coupling = None
@@ -73,18 +82,40 @@ class Digraph(Model):
         src = message.source
         time = message.time
         value = message.content.value
-        for target_port in self.ext_input_couplings[message.content.port]:
+        target_ports = self.ext_input_couplings[message.content.port]
+        for target_port in target_ports:
             target_port.model.ext_transition(
                 Message(src, time, Content(target_port, value)))
         self.time_advance()
 
     def time_advance(self):
         self.last_event_time = self.next_event_time
-
+        self.next_event_time = self._time_advance()
+    
+    def time_advance_nested(self) -> float:
+        """
+        Use when duplicates are minimal
+        """
+        minval = float("inf")
+        mins = []
+        for child in self.children:
+            if child.next_event_time < minval:
+                minval = child.next_event_time
+                mins = [child]
+            elif child.next_event_time == minval:
+                mins.append(child)
+        
+        return minval
+    
+    def time_advance_unnested(self) -> float:
+        """
+        Use when duplicates are common
+        """
         min_time = min(self.children, key=lambda x: x.next_event_time)
         self.next_event_models = [m for m in self.children if m.next_event_time == min_time]
 
-        self.next_event_time = min_time
+        return min_time
+        
 
     def initialize(self):
         for child in self.children:
@@ -114,5 +145,5 @@ class Digraph(Model):
             res = child.find(child)
             if res:
                 return res
-                
+
         return None
