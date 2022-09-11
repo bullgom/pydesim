@@ -1,6 +1,6 @@
 from . import INF, NEG_INF, Content
 from .port_manager import PortManager
-from .Content import Content
+from .content import Content
 
 class Model:
 
@@ -8,7 +8,6 @@ class Model:
             self,
             name,
             parent=None,
-            cell_pos=None,
             in_ports={},
             out_ports={},
             next_event_time=INF,
@@ -18,7 +17,6 @@ class Model:
         self.parent = parent
         self.in_ports = PortManager(in_ports)
         self.out_ports = PortManager(out_ports)
-        self.cell_pos = cell_pos
         self.next_event_time = next_event_time
         self.last_event_time = last_event_time
 

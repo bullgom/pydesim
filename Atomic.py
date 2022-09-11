@@ -2,7 +2,6 @@ from . import INF, NEG_INF, PASSIVE, Message, Model, PortManager
 from functools import wraps
 from typing import Optional
 import math
-import numpy as np
 
 
 class Atomic(Model):
@@ -11,7 +10,6 @@ class Atomic(Model):
             self,
             name: str,
             parent: Optional[Model]=None,
-            cell_pos=None,
             in_ports:Optional[dict]={},
             out_ports:Optional[dict]={},
             next_event_time:Optional[float]=INF,
@@ -24,7 +22,6 @@ class Atomic(Model):
         super().__init__(
             name,
             parent,
-            cell_pos,
             in_ports,
             out_ports,
             next_event_time,
@@ -38,7 +35,6 @@ class Atomic(Model):
         self.initial_state = {
             "state": self.state,
             "sigma": self.sigma,
-            "cell_pos": self.cell_pos,
             "next_event_time": self.next_event_time,
             "last_event_time": self.last_event_time,
             "elapsed_time": self.elapsed_time
@@ -47,7 +43,6 @@ class Atomic(Model):
     def initialize(self):
         self.state = self.initial_state["state"]
         self.sigma = self.initial_state["sigma"]
-        self.cell_pos = self.initial_state["cell_pos"]
         self.next_event_time = self.initial_state["next_event_time"]
         self.last_event_time = self.initial_state["last_event_time"]
         self.elapsed_time = self.initial_state["elapsed_time"]

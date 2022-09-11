@@ -10,7 +10,6 @@ class Simulation(Digraph):
             parent=None,
             in_ports=[],
             out_ports=[],
-            cell_pos=None,
             next_event_time=INF,
             last_event_time=NEG_INF,
             int_couplings={},
@@ -21,7 +20,6 @@ class Simulation(Digraph):
         super().__init__(
             name,
             parent,
-            cell_pos,
             in_ports,
             out_ports,
             next_event_time,
