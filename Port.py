@@ -1,5 +1,5 @@
 
-from .Model import Model
+from .model import Model
 
 
 class Port:

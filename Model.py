@@ -1,5 +1,5 @@
 from . import INF, NEG_INF, Content
-from .PortManager import PortManager
+from .port_manager import PortManager
 from .Content import Content
 
 class Model:
