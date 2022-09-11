@@ -5,30 +5,19 @@ class Digraph(Model):
 
     def __init__(
             self,
-            name,
-            parent : Model | None =None,
-            in_ports : dict | None = None,
-            out_ports : dict | None = None,
-            next_event_time=INF,
-            last_event_time=NEG_INF,
-            int_couplings={},
-            ext_output_couplings={},
-            ext_input_couplings={},
-            select=None):
-        super().__init__(
-            name,
-            parent,
-            in_ports,
-            out_ports,
-            next_event_time,
-            last_event_time)
+            *args,
+            int_couplings : dict | None = None,
+            ext_output_couplings : dict | None = None,
+            ext_input_couplings : dict | None = None,
+            **kwargs
+        ):
+        super().__init__(*args, **kwargs)
 
         self.next_event_models = []
         self.children = []
-        self.int_couplings = int_couplings
-        self.ext_output_couplings = ext_output_couplings
-        self.ext_input_couplings = ext_input_couplings
-        self.select = select
+        self.int_couplings = int_couplings if int_couplings else {}
+        self.ext_output_couplings = ext_output_couplings if ext_output_couplings else {}
+        self.ext_input_couplings = ext_input_couplings if ext_input_couplings else {}
 
     def couple(self, source_port: Port, target_port: Port):
         assert type(source_port) is Port and type(target_port) is Port
