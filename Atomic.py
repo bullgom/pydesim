@@ -37,8 +37,6 @@ class Atomic(Model):
 
     def find(self, name: str) -> "Model" | None:
         return self if name == self.name else None
-        
-        
 
     @staticmethod
     def int_transition_wrapper(int_transition):
