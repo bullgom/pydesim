@@ -1,6 +1,6 @@
-from . import INF, NEG_INF, Content
-from .content import Content
-from typing import Any
+from constants import INF, NEG_INF
+from content import Content
+from typing import Any, Optional
 
 class Model:
 
@@ -36,7 +36,7 @@ class Model:
     def time_advance(self):
         raise NotImplementedError()
 
-    def find(self, name: str) -> "Model" | None:
+    def find(self, name: str) -> Optional[None]:
         """
         iteratively searchs entity with given name
         from the children tree

@@ -1,4 +1,6 @@
-from . import INF, NEG_INF, PASSIVE, Message, Model
+from constants import INF, NEG_INF, PASSIVE
+from message import Message
+from model import Model
 from functools import wraps
 from typing import Optional, Callable
 import math
@@ -35,7 +37,7 @@ class Atomic(Model):
         self.last_event_time = time
         self.next_event_time = time + self.time_until_event
 
-    def find(self, name: str) -> "Model" | None:
+    def find(self, name: str) -> Model | None:
         return self if name == self.name else None
 
     @staticmethod

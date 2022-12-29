@@ -1,9 +1,6 @@
-
-from .model import Model
-
 class Port:
-    def __init__(self, model:Model, name:str):
-        self.model : Model = model
+    def __init__(self, model, name:str):
+        self.model = model
         self.name : str = name
 
     def __eq__(self, other):

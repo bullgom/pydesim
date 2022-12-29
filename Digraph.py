@@ -1,5 +1,7 @@
-from . import Model, Message, Content, INF, NEG_INF, Port
-from typing import Optional
+from model import Model
+from message import Message
+from constants import INF, NEG_INF
+from port import Port
 
 class Digraph(Model):
 
@@ -24,9 +26,9 @@ class Digraph(Model):
             ext_input_couplings if ext_input_couplings else {}
         
         if ta_function == "unnested":
-            self._time_advance = self._time_advance_unnested
+            self._time_advance = self.time_advance_unnested
         elif ta_function == "nested":
-            self._time_advance = self._time_advance_nested
+            self._time_advance = self.time_advance_nested
         else:
             raise ValueError(f"{ta_function} is not allowed")
 
@@ -109,15 +111,15 @@ class Digraph(Model):
         """
         Use when duplicates are common
         """
-        min_time = min(self.children, key=lambda x: x.next_event_time)
+        min_time = min([m.next_event_time for m in self.children])
         self.next_event_models = [m for m in self.children if m.next_event_time == min_time]
 
         return min_time
         
 
-    def initialize(self):
+    def initialize(self, start_time: float = 0):
         for child in self.children:
-            child.initialize()
+            child.initialize(start_time)
         self.time_advance()
 
     def __getitem__(self, idx):

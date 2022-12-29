@@ -9,6 +9,12 @@
             "type": "python",
             "request": "launch",
             "module": "__init__"
+        },
+        {
+            "name": "Example: Server",
+            "type": "python",
+            "request": "launch",
+            "module": "examples.server"
         }
     ]
 }

@@ -1,4 +1,5 @@
-from . import Digraph, INF, NEG_INF
+from constants import INF, NEG_INF
+from digraph import Digraph
 
 class Simulation(Digraph):
 
