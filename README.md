@@ -1,6 +1,5 @@
 # pydesim
 
-Discrete Event Simulation Library 
-written in Python language
+Discrete Event System Specification (DEVS) implementation in Python language
 
 based on Discrete Event Specifiction formalism by Barnard P. Zeigler
