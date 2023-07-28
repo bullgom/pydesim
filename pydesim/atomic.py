@@ -1,6 +1,6 @@
 from constants import INF, NEG_INF, PASSIVE
-from message import Message
-from model import Model
+from .message import Message
+from .model import Model
 from functools import wraps
 from typing import Optional, Callable
 import math
