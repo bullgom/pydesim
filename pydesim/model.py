@@ -1,18 +1,19 @@
-from constants import INF, NEG_INF
-from content import Content
 from typing import Any, Optional
 
+from .constants import INF, NEG_INF
+from .content import Content
+
+
 class Model:
-
     def __init__(
-            self,
-            name,
-            parent=None,
-            in_ports : dict | None = None,
-            out_ports : dict | None = None,
-            next_event_time=INF,
-            last_event_time=NEG_INF):
-
+        self,
+        name,
+        parent=None,
+        in_ports: dict | None = None,
+        out_ports: dict | None = None,
+        next_event_time=INF,
+        last_event_time=NEG_INF,
+    ):
         self.name = name
         self.parent = parent
         self.in_ports = in_ports if in_ports else {}
@@ -27,10 +28,10 @@ class Model:
     def initialize(self):
         raise NotImplementedError()
 
-    def int_transition(self, time:float) -> Any:
+    def int_transition(self, time: float) -> Any:
         raise NotImplementedError()
 
-    def ext_transition(self, content:Content, time:float) -> None:
+    def ext_transition(self, content: Content, time: float) -> None:
         raise NotImplementedError()
 
     def time_advance(self):

@@ -1,30 +1,33 @@
-from model import Model
-from message import Message
-from constants import INF, NEG_INF
-from port import Port
+from .constants import INF, NEG_INF
+from .message import Message
+from .model import Model
+from .port import Port
+
 
 class Digraph(Model):
-
     def __init__(
-            self,
-            *args,
-            int_couplings : dict | None = None,
-            ext_output_couplings : dict | None = None,
-            ext_input_couplings : dict | None = None,
-            ta_function: str = "unnested",
-            **kwargs
-        ):
+        self,
+        *args,
+        int_couplings: dict | None = None,
+        ext_output_couplings: dict | None = None,
+        ext_input_couplings: dict | None = None,
+        ta_function: str = "unnested",
+        **kwargs,
+    ):
         super().__init__(*args, **kwargs)
 
-        self.next_event_models : list[Model] = []
-        self.children : list[Model] = []
-        self.int_couplings : dict[Port, list[Port]] =  \
+        self.next_event_models: list[Model] = []
+        self.children: list[Model] = []
+        self.int_couplings: dict[Port, list[Port]] = (
             int_couplings if int_couplings else {}
-        self.ext_output_couplings : dict[Port, list[Port]] = \
+        )
+        self.ext_output_couplings: dict[Port, list[Port]] = (
             ext_output_couplings if ext_output_couplings else {}
-        self.ext_input_couplings : dict[Port, list[Port]] = \
+        )
+        self.ext_input_couplings: dict[Port, list[Port]] = (
             ext_input_couplings if ext_input_couplings else {}
-        
+        )
+
         if ta_function == "unnested":
             self._time_advance = self.time_advance_unnested
         elif ta_function == "nested":
@@ -64,7 +67,7 @@ class Digraph(Model):
         for message in result:
             if message.content.port in self.int_couplings:
                 self.on_int(message)
-                    
+
             if message.content.port in self.ext_output_couplings:
                 to_parent += self.on_ext_output(message)
 
@@ -91,7 +94,7 @@ class Digraph(Model):
     def time_advance(self):
         self.last_event_time = self.next_event_time
         self.next_event_time = self._time_advance()
-    
+
     def time_advance_nested(self) -> float:
         """
         Use when duplicates are minimal
@@ -104,18 +107,19 @@ class Digraph(Model):
                 mins = [child]
             elif child.next_event_time == minval:
                 mins.append(child)
-        
+
         return minval
-    
+
     def time_advance_unnested(self) -> float:
         """
         Use when duplicates are common
         """
         min_time = min([m.next_event_time for m in self.children])
-        self.next_event_models = [m for m in self.children if m.next_event_time == min_time]
+        self.next_event_models = [
+            m for m in self.children if m.next_event_time == min_time
+        ]
 
         return min_time
-        
 
     def initialize(self, start_time: float = 0):
         for child in self.children:
@@ -140,7 +144,7 @@ class Digraph(Model):
     def find(self, name: str) -> Model | None:
         if self.name == name:
             return self
-        
+
         for child in self.children:
             res = child.find(child)
             if res:

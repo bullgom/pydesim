@@ -1,5 +1,5 @@
-INF = float('inf')
-NEG_INF = float('-inf')
+INF = float("inf")
+NEG_INF = float("-inf")
 
 PASSIVE = -1
 
