@@ -1,8 +1,6 @@
 import abc
 import typing as ty
 
-import typing_extensions as te
-
 from .. import constants as const
 from .. import port as po
 from . import state as st
@@ -21,6 +19,9 @@ class Model(abc.ABC):
         self._out_ports = list()
         self._remaining_time = const.INF
 
+    def hold_for(self, duration: float) -> None:
+        self._remaining_time = duration
+
     def hold_in(self, state: st.State, duration: float) -> None:
         self._state = state
         self._remaining_time = duration
@@ -34,7 +35,7 @@ class Model(abc.ABC):
 
     @abc.abstractmethod
     def initialize(self) -> float:
-        raise NotImplementedError()
+        ...
 
     @abc.abstractmethod
     def internal(self, current_time: float) -> ty.Any:

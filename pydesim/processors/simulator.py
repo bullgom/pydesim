@@ -12,7 +12,7 @@ from . import base
 class Simulator(base.Child[mo.Model]):
 
     def __init__(self, model: mo.Model, parent: base.Parent) -> None:
-        base.Child[mo.Model].__init__(self, model, parent)
+        base.Child.__init__(self, model, parent)
 
     def hold_for(self, sigma: float = constants.INF) -> None:
         self._time_until_event = sigma

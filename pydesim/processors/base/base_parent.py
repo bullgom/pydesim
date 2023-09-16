@@ -7,18 +7,14 @@ from . import selector
 
 class _BaseParent(pr.Processor):
     _children: list[pr.Processor]
-    _imminent: list[pr.Processor]
-    _selector: selector.Selector
 
-    def __init__(self, selector: selector.Selector = selector.FIFO()) -> None:
-        self._imminent = []
-        self._selector = selector
+    def __init__(self) -> None:
+        super().__init__()
+        self._children = []
 
+    @abc.abstractmethod
     def done(self, source: pr.Processor, t: float) -> None:
-        if t < self._next_event_time:
-            self._imminent.clear()
-            self._imminent.append(source)
-            self._next_event_time = t
+        raise NotImplementedError
 
     def initialize(self) -> float:
         for child in self._children:

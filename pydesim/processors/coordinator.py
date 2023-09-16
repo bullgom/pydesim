@@ -1,8 +1,5 @@
 import abc
 import typing as ty
-from typing import Any
-
-import typing_extensions as te
 
 from .. import model as mo
 from .. import port as po
@@ -25,7 +22,7 @@ class Coordinator(base.Child[mo.CoupledModel], base.Parent):
     ) -> None:
         base.Processor.__init__(self)
         base.Parent.__init__(self, selector)
-        base.Child[mo.CoupledModel].__init__(self, model, parent)
+        base.Child.__init__(self, model, parent)
 
     def star(self, current_time: float):
         imminent = self._selector(self._imminent_children)
@@ -55,17 +52,16 @@ class Coordinator(base.Child[mo.CoupledModel], base.Parent):
         self._parent.y(t, to_parent)
 
     def initialize(self) -> None:
-        owners: dict[mo.Model, base.Child] = {}
+        base.Parent.initialize(self)
+        base.Child.initialize(self)
 
-        for child in self._children:
-            child.initialize()
-            owners[child._model] = child
+        owners: dict[mo.Model, base.Child] = {
+            child._model: child for child in self._children
+        }
 
-        self._in_map = self._map_couplings(self._model._in_couplings, owners)
-        self._out_map = self._map_couplings(self._model._out_couplings, owners)
-        self._internal_map = self._map_couplings(
-            self._model._internal_couplings, owners
-        )
+        self._in_map = self._map_couplings(self._model.in_couplings, owners)
+        self._out_map = self._map_couplings(self._model.out_couplings, owners)
+        self._internal_map = self._map_couplings(self._model.internal_couplings, owners)
 
         super().initialize()
 

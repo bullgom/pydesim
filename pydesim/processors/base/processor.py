@@ -8,7 +8,6 @@ class Processor(abc.ABC):
     _last_event_time: float
 
     def __init__(self) -> None:
-        super().__init__()
         self._next_event_time = const.INF
         self._last_event_time = const.NINF
 
