@@ -1,15 +1,9 @@
-from constants import INF, NEG_INF
-from digraph import Digraph
+from .constants import INF, NEG_INF
+from .digraph import Digraph
+
 
 class Simulation(Digraph):
-
-    def __init__(
-            self,
-            *args,
-            time_limit=INF,
-            **kwargs
-        ):
-
+    def __init__(self, *args, time_limit=INF, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.time_limit = time_limit

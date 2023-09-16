@@ -1,5 +1,5 @@
-from constants import INF, NEG_INF
-from content import Content
+from .constants import INF, NEG_INF
+from .content import Content
 from typing import Any, Optional
 
 class Model:

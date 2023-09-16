@@ -1,7 +1,7 @@
-from model import Model
-from message import Message
-from constants import INF, NEG_INF
-from port import Port
+from .model import Model
+from .message import Message
+from .constants import INF, NEG_INF
+from .port import Port
 
 class Digraph(Model):
 
