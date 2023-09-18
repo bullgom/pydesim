@@ -108,11 +108,9 @@ if __name__ == "__main__":
     time_limit = 100
 
     sim = Simulation(name="SingleServer", time_limit=time_limit)
-    server = Server(
-        name="Server", parent=sim, int_transition_callbacks=[recorder.count]
-    )
-    ef = ExperimentalFrame(job_interval, job_low, job_high, name="EF", parent=sim)
-
+    server = Server(name="Server", int_transition_callbacks=[recorder.count])
+    ef = ExperimentalFrame(job_interval, job_low, job_high, name="EF")
+    sim.add_children(ef, server)
     sim.couple(ef.out_ports[JOB], server.in_ports[JOB])
 
     sim.initialize()

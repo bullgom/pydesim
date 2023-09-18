@@ -1,5 +1,5 @@
 from .constants import INF, NEG_INF
-from .processors.digraph import Coordinator
+from .processors.coordinator import Coordinator
 
 
 class Simulation(Coordinator):

@@ -1,5 +1,8 @@
 from typing import Any, Optional
 
+import pydantic as da
+import typing_extensions as te
+
 from ..constants import INF, NEG_INF
 from ..content import Content
 
@@ -7,23 +10,17 @@ from ..content import Content
 class Processor:
     def __init__(
         self,
-        name,
-        parent=None,
-        in_ports: dict | None = None,
-        out_ports: dict | None = None,
-        next_event_time=INF,
-        last_event_time=NEG_INF,
-    ):
+        name: str,
+        in_ports: dict = da.Field({}),
+        out_ports: dict = da.Field({}),
+        next_event_time: da.PositiveFloat = INF,
+        last_event_time: da.PositiveFloat = NEG_INF,
+    ) -> None:
         self.name = name
-        self.parent = parent
         self.in_ports = in_ports if in_ports else {}
         self.out_ports = out_ports if out_ports else {}
         self.next_event_time = next_event_time
         self.last_event_time = last_event_time
-
-        if self.parent:
-            if self not in self.parent.children:
-                self.parent.children.append(self)
 
     def initialize(self):
         raise NotImplementedError()

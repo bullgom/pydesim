@@ -1,7 +1,8 @@
-from .processor import Processor
-from ..message import Message
 from ..constants import INF, NEG_INF
+from ..message import Message
 from ..port import Port
+from .processor import Processor
+
 
 class Coordinator(Processor):
 
@@ -70,6 +71,9 @@ class Coordinator(Processor):
 
         self.time_advance()
         return to_parent
+
+    def add_children(self, *child: Processor) -> None:
+        self.children += child
 
     def on_int(self, message: Message) -> None:
         for target_port in self.int_couplings[message.content.port]:
