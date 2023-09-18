@@ -1,9 +1,9 @@
-from .model import Model
-from .message import Message
-from .constants import INF, NEG_INF
-from .port import Port
+from .processor import Processor
+from ..message import Message
+from ..constants import INF, NEG_INF
+from ..port import Port
 
-class Digraph(Model):
+class Coordinator(Processor):
 
     def __init__(
             self,
@@ -16,8 +16,8 @@ class Digraph(Model):
         ):
         super().__init__(*args, **kwargs)
 
-        self.next_event_models : list[Model] = []
-        self.children : list[Model] = []
+        self.next_event_models : list[Processor] = []
+        self.children : list[Processor] = []
         self.int_couplings : dict[Port, list[Port]] =  \
             int_couplings if int_couplings else {}
         self.ext_output_couplings : dict[Port, list[Port]] = \
@@ -137,7 +137,7 @@ class Digraph(Model):
         else:
             raise StopIteration
 
-    def find(self, name: str) -> Model | None:
+    def find(self, name: str) -> Processor | None:
         if self.name == name:
             return self
         
