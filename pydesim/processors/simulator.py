@@ -7,7 +7,7 @@ from typing_extensions import Self
 from ..constants import INF, NEG_INF, PASSIVE
 from ..message import Message
 from .processor import Processor
-
+import pydantic as da
 
 class Simulator(Processor):
     state: Any
@@ -15,12 +15,14 @@ class Simulator(Processor):
 
     def __init__(
         self,
-        *args,
+        name: str,
+        in_ports: dict = da.Field({}),
+        out_ports: dict = da.Field({}),
         ext_transition_callbacks: list[Callable] | None = None,
         int_transition_callbacks: list[Callable] | None = None,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)
+        super().__init__(name, in_ports, out_ports, **kwargs)
 
         self.elapsed_time = INF
         self.state = PASSIVE
@@ -50,7 +52,7 @@ class Simulator(Processor):
     @staticmethod
     def int_transition_wrapper(int_transition: Callable):
         @wraps(int_transition)
-        def wrapper(self : Self, *args, **kwargs):
+        def wrapper(self: Self, *args, **kwargs):
             self.elapsed_time = args[0] - self.last_event_time
             result = int_transition(self, *args, **kwargs)
             self.time_advance(args[0])

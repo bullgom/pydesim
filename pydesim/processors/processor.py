@@ -1,29 +1,33 @@
+import abc
 from typing import Any, Optional
 
 import pydantic as da
 import typing_extensions as te
 
-from ..constants import INF, NEG_INF
+from .. import constants as const
 from ..content import Content
 
 
-class Processor:
+class Processor(abc.ABC):
+    next_event_time: da.NonNegativeFloat
+    last_event_time: da.NonNegativeFloat
+
     def __init__(
         self,
         name: str,
         in_ports: dict = da.Field({}),
         out_ports: dict = da.Field({}),
-        next_event_time: da.PositiveFloat = INF,
-        last_event_time: da.PositiveFloat = NEG_INF,
     ) -> None:
+        self.next_event_time = const.INF
+        self.last_event_time = const.INF
         self.name = name
         self.in_ports = in_ports if in_ports else {}
         self.out_ports = out_ports if out_ports else {}
-        self.next_event_time = next_event_time
-        self.last_event_time = last_event_time
 
-    def initialize(self):
-        raise NotImplementedError()
+    @abc.abstractmethod
+    def initialize(self, current_time: float):
+        """Should set `next_event_time`"""
+        self.time_advance()
 
     def int_transition(self, time: float) -> Any:
         raise NotImplementedError()

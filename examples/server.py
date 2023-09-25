@@ -21,7 +21,7 @@ JOB = "JOB"
 
 @dataclass
 class Job:
-    name: int
+    name: str
     time: float
 
 
