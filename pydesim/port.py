@@ -6,12 +6,12 @@ class PortException(Exception):
     """Exceptions related to ports."""
 
 
-class NoValueTakeException(PortException):
+class NoValueException(PortException):
     def __init__(self, details: str = "") -> None:
         super().__init__(f"Tried to take value from port when it was empty!\n{details}")
 
 
-class NonPortTypeInAttributeException(PortException):
+class PortsTypeException(PortException):
     def __init__(self, details: str = "") -> None:
         super().__init__(
             f"Only `Port`s are allowed as attribute of a `port_class`.\n{details}"
@@ -33,27 +33,23 @@ class Port(ty.Generic[T]):
 
     def take(self) -> T:
         if self.__value is None:
-            raise NoValueTakeException()
+            raise NoValueException()
         output = self.__value
         self.__value = None
         return output
 
 
-def port_class(cls: type[T]):
-    """
-    Make a class `port_class`.
-    A 
-    """
+def port_class(cls: type[T]) -> type[T]:
+    """Make a class `port_class`."""
+
     for key, annotation_type in cls.__annotations__.items():
-        if isinstance(annotation_type, Port):
-            raise NonPortTypeInAttributeException(
-                f"{key}:{annotation_type} is not a `Port`."
-            )
-            
+        if not isinstance(annotation_type, Port):
+            raise PortsTypeException(f"{key}:{annotation_type} is not a `Port`.")
+
     def __init__(self: T, *args, **kwargs) -> None:
         for key, annotation_type in cls.__annotations__.items():
             setattr(self, key, Port())
 
-    cls.__init__ = __init__ #
+    cls.__init__ = __init__
 
     return cls
