@@ -39,17 +39,9 @@ class Port(ty.Generic[T]):
         return output
 
 
-class port_class_iterator:
-    ...
-
-
 class PortClass:
-
     def __iter__(self) -> ty.Iterator[Port]:
-        ...
-
-    def __next__(self) -> Port:
-        ...
+        return iter(self.__dict__.values())
 
 
 P = ty.TypeVar("P", bound=PortClass)

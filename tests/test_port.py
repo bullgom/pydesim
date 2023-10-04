@@ -39,3 +39,14 @@ class PortTest(ut.TestCase):
 
         self.assertTrue(issubclass(Ports, pd.port.PortClass))
         self.assertFalse(issubclass(NormalClass, pd.port.PortClass))
+
+    def test_iteration(self) -> None:
+        @pd.port_class
+        class Ports:
+            hello: pd.Port[int]
+            bye: pd.Port[str]
+
+        ports = Ports()
+
+        for i in ports:
+            pass
