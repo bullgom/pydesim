@@ -2,4 +2,4 @@ import unittest as ut
 
 
 class BaseModelTest(ut.TestCase):
-    pass
+    def test_

@@ -24,6 +24,18 @@ class PortTest(ut.TestCase):
 
     def test_port_type_exception(self) -> None:
         with self.assertRaises(pd.port.PortsTypeException):
+
             @pd.port_class
             class Ports:
                 hello: str
+
+    def test_is_port_class(self) -> None:
+        @pd.port_class
+        class Ports:
+            hello: pd.Port[int]
+
+        class NormalClass:
+            pass
+
+        self.assertTrue(issubclass(Ports, pd.port.PortClass))
+        self.assertFalse(issubclass(NormalClass, pd.port.PortClass))
