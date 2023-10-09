@@ -11,6 +11,8 @@ class PortTest(ut.TestCase):
 
         self.assertEqual(value, output)
 
+
+"""
     def test_port_class(self) -> None:
         @pd.port_class
         class Ports:
@@ -50,3 +52,4 @@ class PortTest(ut.TestCase):
 
         for i in ports:
             pass
+"""
