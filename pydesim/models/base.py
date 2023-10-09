@@ -23,7 +23,7 @@ class Model(abc.ABC):
         return self._sigma
 
     @abc.abstractmethod
-    def internal_transition(self, state: pt.State, current: pt.VirtualTime) -> pt.State:
+    def internal_transition(self, state: pt.State) -> pt.State:
         pass
 
     @abc.abstractmethod

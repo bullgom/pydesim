@@ -1,1 +1,1 @@
-from .port import Port, port_class
+from .port import Port
