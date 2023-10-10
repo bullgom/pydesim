@@ -4,12 +4,12 @@ import pydantic as da
 import typing_extensions as te
 
 from .. import constants as const
-from ..content import Content
-from .. import models as mo
+from .. import port as po
 
 
 class Processor(abc.ABC):
-    def __init__(self, model: mo.Model) -> None:
+    def __init__(self, in_ports: po.PortDict, out_ports: po.PortDict) -> None:
         self.next_event_time: da.NonNegativeFloat = const.INF
         self.last_event_time: da.NonNegativeFloat = const.INF
-        self.model: mo.Model = model
+        self.in_ports: po.PortDict
+
