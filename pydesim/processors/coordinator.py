@@ -1,10 +1,10 @@
 from ..constants import INF, NEG_INF
 from ..message import Message
 from ..port import Port
-from .processor import Processor
+from .processor import Model
 
 
-class Coordinator(Processor):
+class Coordinator(Model):
 
     def __init__(
             self,
@@ -17,8 +17,8 @@ class Coordinator(Processor):
         ):
         super().__init__(*args, **kwargs)
 
-        self.next_event_models : list[Processor] = []
-        self.children : list[Processor] = []
+        self.next_event_models : list[Model] = []
+        self.children : list[Model] = []
         self.int_couplings : dict[Port, list[Port]] =  \
             int_couplings if int_couplings else {}
         self.ext_output_couplings : dict[Port, list[Port]] = \
@@ -72,7 +72,7 @@ class Coordinator(Processor):
         self.time_advance()
         return to_parent
 
-    def add_children(self, *child: Processor) -> None:
+    def add_children(self, *child: Model) -> None:
         self.children += child
 
     def on_int(self, message: Message) -> None:
@@ -141,7 +141,7 @@ class Coordinator(Processor):
         else:
             raise StopIteration
 
-    def find(self, name: str) -> Processor | None:
+    def find(self, name: str) -> Model | None:
         if self.name == name:
             return self
         

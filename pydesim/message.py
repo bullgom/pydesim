@@ -2,11 +2,11 @@ from typing import Any
 
 from .content import Content
 from .port import Port
-from .processors.processor import Processor
+from .processors.processor import Model
 
 
 class Message:
-    def __init__(self, source: Processor, time: float, content: Any):
+    def __init__(self, source: Model, time: float, content: Any):
         self.source = source
         self.time = time
         self.content = content

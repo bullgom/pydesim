@@ -6,10 +6,10 @@ from typing_extensions import Self
 
 from ..constants import INF, NEG_INF, PASSIVE
 from ..message import Message
-from .processor import Processor
+from .processor import Model
 import pydantic as da
 
-class Simulator(Processor):
+class Simulator(Model):
     state: Any
     time_until_event: float
 
@@ -46,7 +46,7 @@ class Simulator(Processor):
         self.last_event_time = time
         self.next_event_time = time + self.time_until_event
 
-    def find(self, name: str) -> Processor | None:
+    def find(self, name: str) -> Model | None:
         return self if name == self.name else None
 
     @staticmethod
