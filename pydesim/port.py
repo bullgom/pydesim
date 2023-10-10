@@ -39,5 +39,25 @@ class Port(ty.Generic[T]):
         return output
 
 
-class PortDict(dict[str, Port]):
-    pass
+class PortClass:
+    def __iter__(self) -> ty.Iterator[Port]:
+        return iter(self.__dict__.values())
+
+
+P = ty.TypeVar("P", bound=PortClass)
+
+
+def port_class(cls: type[T]) -> type[P]:
+    """Make a class `port_class`."""
+
+    for key, annotation in cls.__annotations__.items():
+        origin = ty.get_origin(annotation)
+        if (origin is None) or (not issubclass(origin, Port)):
+            raise PortsTypeException(f"{key}: {annotation} is not a {Port.__name__}.")
+
+    class _NewClass(cls, PortClass):
+        def __init__(self: T) -> None:
+            for key, annotation_type in self.__annotations__.items():
+                setattr(self, key, Port())
+
+    return _NewClass

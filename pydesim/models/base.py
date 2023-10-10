@@ -15,8 +15,8 @@ A basic `model` contains following information:
 
 
 class Model(abc.ABC):
-    in_ports: po.PortDict
-    out_ports: po.PortDict
+    _in_ports: po.PortClass
+    _out_ports: po.PortClass
     _sigma: pt.VirtualTime  # time until next event
 
     def time_advance(self) -> pt.VirtualTime:
@@ -26,8 +26,10 @@ class Model(abc.ABC):
     def internal_transition(self, state: pt.State) -> pt.State:
         pass
 
-    @abc.abstractmethod
-    def external_transition(
-        self, state: pt.State, elapsed: pt.VirtualTime, input: po.Port
-    ) -> pt.State:
-        pass
+    @property
+    def in_ports(self) -> po.PortClass:
+        return self._in_ports
+
+    @property
+    def out_ports(self) -> po.PortClass:
+        return self._out_ports
