@@ -6,33 +6,19 @@ from typing_extensions import Self
 
 from ..constants import INF, NEG_INF, PASSIVE
 from ..message import Message
-from .processor import Model
+from .processor import Processor
 import pydantic as da
-
-class Simulator(Model):
+from .. import port as po
+from .. import project_types as pt
+import abc
+class Simulator(Processor):
     state: Any
     time_until_event: float
 
-    def __init__(
-        self,
-        name: str,
-        in_ports: dict = da.Field({}),
-        out_ports: dict = da.Field({}),
-        ext_transition_callbacks: list[Callable] | None = None,
-        int_transition_callbacks: list[Callable] | None = None,
-        **kwargs
-    ):
-        super().__init__(name, in_ports, out_ports, **kwargs)
+    def __init__(self, in_ports: po.PortDict, out_ports: po.PortDict):
+        super().__init__(in_ports, out_ports)
 
-        self.elapsed_time = INF
-        self.state = PASSIVE
         self.time_until_event = INF
-        self.int_transition_callbacks = (
-            int_transition_callbacks if int_transition_callbacks else []
-        )
-        self.ext_transition_callbacks = (
-            ext_transition_callbacks if ext_transition_callbacks else []
-        )
 
     def hold_in(self, state: Any, sigma: float = INF):
         self.state = state
@@ -42,22 +28,21 @@ class Simulator(Model):
         if math.isfinite(self.time_until_event):
             self.time_until_event -= self.elapsed_time
 
-    def time_advance(self, time: float):
-        self.last_event_time = time
-        self.next_event_time = time + self.time_until_event
+    def time_advance(self, current_time: pt.VirtualTime):
+        self.last_event_time = current_time
+        self.next_event_time = current_time + self.time_until_event
 
-    def find(self, name: str) -> Model | None:
-        return self if name == self.name else None
+    @abc.abstractmethod
+    def internal_transition(self, )
 
     @staticmethod
     def int_transition_wrapper(int_transition: Callable):
         @wraps(int_transition)
         def wrapper(self: Self, *args, **kwargs):
-            self.elapsed_time = args[0] - self.last_event_time
+            elapsed_time = args[0] - self.last_event_time
             result = int_transition(self, *args, **kwargs)
             self.time_advance(args[0])
-            for callback in self.int_transition_callbacks:
-                callback(self, args, result)
+                
             if result is None:
                 return None
             elif type(result) is not list:
