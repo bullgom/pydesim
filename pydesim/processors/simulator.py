@@ -11,7 +11,7 @@ import pydantic as da
 from .. import port as po
 from .. import project_types as pt
 import abc
-from .. import model as mo
+from ..models import base_model as mo
 
 class Simulator(Processor):
 

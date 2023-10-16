@@ -1,16 +1,11 @@
 import abc
 import typing as ty
-from . import project_types as pt
-from . import port as po
-from . import constants as const
+from .. import project_types as pt
+from .. import port as po
+from .. import constants as const
 
-
-class Model(abc.ABC):
+class BaseModel(abc.ABC):
     state: pt.State
-
-    def __init__(self, in_ports: po.PortDict, out_ports: po.PortDict) -> None:
-        self.in_ports: po.PortDict = in_ports
-        self.out_ports: po.PortDict = out_ports
 
     @abc.abstractmethod
     def initialize(self) -> None:

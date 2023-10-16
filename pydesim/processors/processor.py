@@ -5,7 +5,7 @@ import typing_extensions as te
 
 from .. import constants as const
 from .. import port as po
-from .. import model as mo
+from ..models import base_model as mo
 
 
 class Processor(abc.ABC):
