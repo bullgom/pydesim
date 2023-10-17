@@ -1,10 +1,18 @@
-from pydesim import port as po
+from .. import port as po
 from . import model as mo
 import typing as ty
 from . import port as pm
 
-Coupling = ty.DefaultDict[pm.PairedPort, list[pm.PairedPort]]
-
+class Coupling(ty.DefaultDict[pm.PairedPort, list[pm.PairedPort]]):
+    def __init__(self) -> None:
+        super().__init__(list)
+    
+    def propagate(self, source: pm.PairedPort) -> list[pm.PairedPort]:
+        """source의 값을 target에 전달한 후 반환."""
+        targets = self[source]
+        for target in targets:
+            target.put(source.take())
+        return targets
 
 class CoupledModel(mo.Model):
     def __init__(self, in_ports: po.PortDict, out_ports: po.PortDict) -> None:

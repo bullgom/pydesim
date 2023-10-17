@@ -1,42 +1,35 @@
-from ..constants import INF, NEG_INF
-from ..message import Message
-from .. import port as po
+from ..models import port as po
 from . import processor as pr
-from ..models import model as mo
+from .. import models as mo
+from .. import project_types as pt
 
 
-class Coordinator(pr.Processor):
-    def __init__(self, model: mo.Model, ta_function: str = "unnested"):
+class Coordinator(pr.Processor[mo.CoupledModel]):
+    def __init__(self, model: mo.CoupledModel):
         super().__init__(model)
 
-        self.next_event_models: list[pr.Processor] = []
+        self.imminent_processors: list[pr.Processor] = []
         self.children: list[pr.Processor] = []
 
-    def int_transition(self, time: float):
-        result = []
-        for child in self.next_event_models:
-            output = child.int_transition(time)
-            if output:
-                result += output
+    def internal_transition(self, current_time: pt.VirtualTime) -> list[po.PairedPort]:
+        elapsed = current_time - self.last_event_time
 
-        to_parent = []
-        for message in result:
-            if message.content.port in self.internal_couplings:
-                self.on_int(message)
+        active_ports: list[po.PairedPort] = []
+        for child in self.imminent_processors:
+            active_ports += child.internal_transition(current_time)
 
-            if message.content.port in self.out_couplings:
-                to_parent += self.on_ext_output(message)
+        to_parent: list[po.PairedPort] = []
+        for port in active_ports:
+            for target in self.__model.internal_couplings.propagate(port):
+                target.model.external_transition(elapsed, target)
+
+            to_parent += self.__model.out_couplings.propagate(port)
 
         self.time_advance()
         return to_parent
 
     def add_children(self, *child: Processor) -> None:
         self.children += child
-
-    def on_int(self, message: Message) -> None:
-        for target_port in self.internal_couplings[message.content.port]:
-            target_port.model.ext_transition(message.translate(target_port))
-        return None
 
     def on_ext_output(self, message: Message) -> list[Message]:
         to_parent = []
@@ -74,7 +67,7 @@ class Coordinator(pr.Processor):
         Use when duplicates are common
         """
         min_time = min([m.next_event_time for m in self.children])
-        self.next_event_models = [
+        self.imminent_processors = [
             m for m in self.children if m.next_event_time == min_time
         ]
 

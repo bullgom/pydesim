@@ -22,7 +22,7 @@ class BaseModel(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def external_transition(self, elapsed_time: pt.VirtualTime, ports: list[po.Port]):
+    def external_transition(self, elapsed_time: pt.VirtualTime, active_port: po.Port):
         """Should implement the external transition funciton."""
         raise NotImplementedError
 
