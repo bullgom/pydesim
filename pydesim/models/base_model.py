@@ -46,7 +46,6 @@ class BaseModel(abc.ABC):
         For internal use by Processors
         """
         next_event_time = current_time + self.time_until_event
-        self.time_until_event = next_event_time
         return next_event_time
 
     @property

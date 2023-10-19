@@ -1,12 +1,14 @@
+from pydesim import project_types as pt
 from .. import port as po
 from . import model as mo
 import typing as ty
 from . import port as pm
 
+
 class Coupling(ty.DefaultDict[pm.PairedPort, list[pm.PairedPort]]):
     def __init__(self) -> None:
         super().__init__(list)
-    
+
     def propagate(self, source: pm.PairedPort) -> list[pm.PairedPort]:
         """source의 값을 target에 전달한 후 반환."""
         targets = self[source]
@@ -14,12 +16,13 @@ class Coupling(ty.DefaultDict[pm.PairedPort, list[pm.PairedPort]]):
             target.put(source.take())
         return targets
 
+
 class CoupledModel(mo.Model):
     def __init__(self, in_ports: po.PortDict, out_ports: po.PortDict) -> None:
         super().__init__(in_ports, out_ports)
-        self.internal_couplings: Coupling = Coupling(list)
-        self.out_couplings: Coupling = Coupling(list)
-        self.in_couplings: Coupling = Coupling(list)
+        self.internal_couplings: Coupling = Coupling()
+        self.out_couplings: Coupling = Coupling()
+        self.in_couplings: Coupling = Coupling()
         self.children: set[mo.Model] = set()
 
     def couple(self, source: pm.PairedPort, target: pm.PairedPort) -> None:
@@ -39,3 +42,7 @@ class CoupledModel(mo.Model):
             raise ValueError("Wrong coupling")
 
         coupling[source].append(target)
+
+    @property
+    def time_until_event(self) -> pt.VirtualTime:
+        return min(self.children, key=lambda x: x.time_until_event).time_until_event

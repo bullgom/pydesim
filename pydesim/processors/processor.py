@@ -14,8 +14,8 @@ M = ty.TypeVar("M", bound=mo.Model)
 class Processor(abc.ABC, ty.Generic[M]):
     def __init__(self, model: M) -> None:
         self.next_event_time: da.NonNegativeFloat = const.INF
-        self.last_event_time: da.NonNegativeFloat = const.INF
-        self.__model : M = model
+        self.last_event_time: da.NonNegativeFloat = 0
+        self.model : M = model
 
     @abc.abstractmethod
     def internal_transition(self, current_time: pt.VirtualTime) -> list[po.PairedPort]:

@@ -20,21 +20,12 @@ class Coordinator(pr.Processor[mo.CoupledModel]):
 
         to_parent: list[po.PairedPort] = []
         for port in active_ports:
-            for target in self.__model.internal_couplings.propagate(port):
+            for target in self.model.internal_couplings.propagate(port):
                 target.model.external_transition(elapsed, target)
 
-            to_parent += self.__model.out_couplings.propagate(port)
+            to_parent += self.model.out_couplings.propagate(port)
 
         self.time_advance()
-        return to_parent
-
-    def add_children(self, *child: Processor) -> None:
-        self.children += child
-
-    def on_ext_output(self, message: Message) -> list[Message]:
-        to_parent = []
-        for target_port in self.out_couplings[message.content.port]:
-            to_parent.append(message.translate(target_port))
         return to_parent
 
     def ext_transition(self, message: Message):
