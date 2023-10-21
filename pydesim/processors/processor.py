@@ -15,7 +15,7 @@ class Processor(abc.ABC, ty.Generic[M]):
     def __init__(self, model: M) -> None:
         self.next_event_time: da.NonNegativeFloat = const.INF
         self.last_event_time: da.NonNegativeFloat = 0
-        self.model : M = model
+        self.model: M = model
 
     @abc.abstractmethod
     def internal_transition(self, current_time: pt.VirtualTime) -> list[po.PairedPort]:
@@ -23,6 +23,13 @@ class Processor(abc.ABC, ty.Generic[M]):
 
     @abc.abstractmethod
     def external_transition(
-        self, current_time: pt.VirtualTime, active_ports: list[po.PairedPort]
+        self, current_time: pt.VirtualTime, active_port: po.PairedPort
     ) -> None:
         raise NotImplementedError
+
+    def advance_time(self, current_time: pt.VirtualTime) -> None:
+        self.last_event_time = current_time
+        self.next_event_time = self.model._advance_time(current_time)
+
+    def elapsed_time(self, current_time: pt.VirtualTime) -> pt.VirtualTime:
+        return current_time - self.last_event_time

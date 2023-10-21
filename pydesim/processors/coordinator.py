@@ -1,3 +1,5 @@
+from pydesim import project_types as pt
+from pydesim.models import port as po
 from ..models import port as po
 from . import processor as pr
 from .. import models as mo
@@ -12,7 +14,7 @@ class Coordinator(pr.Processor[mo.CoupledModel]):
         self.children: list[pr.Processor] = []
 
     def internal_transition(self, current_time: pt.VirtualTime) -> list[po.PairedPort]:
-        elapsed = current_time - self.last_event_time
+        elapsed = self.elapsed_time(current_time)
 
         active_ports: list[po.PairedPort] = []
         for child in self.imminent_processors:
@@ -25,72 +27,18 @@ class Coordinator(pr.Processor[mo.CoupledModel]):
 
             to_parent += self.model.out_couplings.propagate(port)
 
-        self.time_advance()
+        self.advance_time(current_time)
         return to_parent
 
-    def ext_transition(self, message: Message):
-        target_ports = self.in_couplings[message.content.port]
-        for target_port in target_ports:
-            target_port.model.ext_transition(message.translate(target_port))
-        self.time_advance()
-
-    def time_advance(self):
-        self.last_event_time = self.next_event_time
-        self.next_event_time = self._time_advance()
-
-    def time_advance_nested(self) -> float:
-        """
-        Use when duplicates are minimal
-        """
-        minval = float("inf")
-        mins = []
-        for child in self.children:
-            if child.next_event_time < minval:
-                minval = child.next_event_time
-                mins = [child]
-            elif child.next_event_time == minval:
-                mins.append(child)
-
-        return minval
-
-    def time_advance_unnested(self) -> float:
-        """
-        Use when duplicates are common
-        """
-        min_time = min([m.next_event_time for m in self.children])
-        self.imminent_processors = [
-            m for m in self.children if m.next_event_time == min_time
-        ]
-
-        return min_time
+    def external_transition(
+        self, current_time: pt.VirtualTime, active_port: po.PairedPort
+    ) -> None:
+        elapsed = self.elapsed_time(current_time)
+        for port in self.model.in_couplings.propagate(active_port):
+            port.model.external_transition(elapsed, port)
+        self.advance_time(current_time)
 
     def initialize(self, start_time: float = 0):
         for child in self.children:
             child.initialize(start_time)
         self.time_advance()
-
-    def __getitem__(self, idx):
-        return self.children[idx]
-
-    def __iter__(self):
-        self._iter_count = 0
-        return self
-
-    def __next__(self):
-        x = self._iter_count
-        self._iter_count += 1
-        if x < len(self.children):
-            return self.children[x]
-        else:
-            raise StopIteration
-
-    def find(self, name: str) -> Processor | None:
-        if self.name == name:
-            return self
-
-        for child in self.children:
-            res = child.find(child)
-            if res:
-                return res
-
-        return None

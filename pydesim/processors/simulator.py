@@ -20,14 +20,10 @@ class Simulator(Processor[mo.Model]):
 
     def internal_transition(self, current_time: pt.VirtualTime) -> list[po.Port]:
         results = self.model.internal_transition(current_time)
-        next_event_time = self.model._advance_time(current_time) # should use this <---------
-        raise NotImplementedError
-        self.last_event_time = current_time
+        self.advance_time(current_time)
         return results
 
     def external_transition(self, current_time: pt.VirtualTime, active_port: po.Port):
-        elapsed = current_time - self.last_event_time
+        elapsed = self.elapsed_time(current_time)
         self.model.external_transition(elapsed, active_port)
-        next_event_time = self.model._advance_time(current_time) # should use this <---------
-        raise NotImplementedError
-        self.last_event_time = current_time
+        self.advance_time(current_time)
