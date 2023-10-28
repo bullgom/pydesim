@@ -27,9 +27,12 @@ class Processor(abc.ABC, ty.Generic[M]):
     ) -> None:
         raise NotImplementedError
 
+    @abc.abstractmethod
     def advance_time(self, current_time: pt.VirtualTime) -> None:
+        """Updates `next_event_time` and `last_event_time`.
+        Subclasses must call `super().advance_time(current_time)`.
+        """
         self.last_event_time = current_time
-        self.next_event_time = self.model._advance_time(current_time)
 
     def elapsed_time(self, current_time: pt.VirtualTime) -> pt.VirtualTime:
         return current_time - self.last_event_time

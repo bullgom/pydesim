@@ -24,6 +24,7 @@ class CoupledModel(mo.Model):
         self.out_couplings: Coupling = Coupling()
         self.in_couplings: Coupling = Coupling()
         self.children: set[mo.Model] = set()
+        self.imminent_chilren: list[mo.Model] = [] # 
 
     def couple(self, source: pm.PairedPort, target: pm.PairedPort) -> None:
         """Couples two ports with direction"""
@@ -42,7 +43,3 @@ class CoupledModel(mo.Model):
             raise ValueError("Wrong coupling")
 
         coupling[source].append(target)
-
-    @property
-    def time_until_event(self) -> pt.VirtualTime:
-        return min(self.children, key=lambda x: x.time_until_event).time_until_event

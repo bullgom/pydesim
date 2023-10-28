@@ -26,32 +26,11 @@ class BaseModel(abc.ABC):
         """Should implement the external transition funciton."""
         raise NotImplementedError
 
-    def hold(self, state_duration: pt.VirtualTime = const.INF) -> None:
-        self.time_until_event = state_duration
 
-    def resume(self, elapsed_time: pt.VirtualTime):
-        self.time_until_event = self.time_until_event - elapsed_time
-
-    def _call_initialize(self) -> None:
+    def _initialize_implementation(self) -> None:
         """For internal use."""
         self.initialize()
         if not hasattr(self, "state"):
             ValueError(
                 f"State not initialized. Is the initial state set in the initialize function?"
             )
-
-    def _advance_time(self, current_time: pt.VirtualTime) -> pt.VirtualTime:
-        """
-        Advances the next time of event and returns it.
-        For internal use by Processors
-        """
-        next_event_time = current_time + self.time_until_event
-        return next_event_time
-
-    @property
-    def time_until_event(self) -> pt.VirtualTime:
-        return self.state.time_until_event
-
-    @time_until_event.setter
-    def time_until_event(self, value: pt.VirtualTime) -> None:
-        self.state.time_until_event = value

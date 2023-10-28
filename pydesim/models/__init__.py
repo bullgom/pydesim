@@ -1,2 +1,2 @@
 from . coupled import CoupledModel
-from .base_model import Model
+from .base_model import BaseModel

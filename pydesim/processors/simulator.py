@@ -1,16 +1,7 @@
-import math
-from functools import wraps
-from typing import Any, Callable, Optional
-
-from typing_extensions import Self
-
-from ..constants import INF, NEG_INF, PASSIVE
-from ..message import Message
+from pydesim import project_types as pt
 from .processor import Processor
-import pydantic as da
 from .. import port as po
 from .. import project_types as pt
-import abc
 from ..models import model as mo
 
 
@@ -27,3 +18,7 @@ class Simulator(Processor[mo.Model]):
         elapsed = self.elapsed_time(current_time)
         self.model.external_transition(elapsed, active_port)
         self.advance_time(current_time)
+
+    def advance_time(self, current_time: pt.VirtualTime) -> None:
+        super().advance_time(current_time)
+        self.next_event_time = self.model.advance_time(current_time)
